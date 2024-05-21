@@ -119,7 +119,7 @@ namespace Pizza.Application.Core.Services
             }
             return totalPrice;
         }
-
+        //
         private int CalculateTotalPoints(List<int> dishQuantities)
         {
             // Assuming user gets 10 points for every dish they buy
