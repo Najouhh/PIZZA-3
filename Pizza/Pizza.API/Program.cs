@@ -1,7 +1,10 @@
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.AzureKeyVault;
 using Pizza.API.Extensions;
 using Pizza.Application.Core.Interfaces;
 using Pizza.Application.Core.Services;
@@ -22,10 +25,25 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });
+//Hämta värden från appsettings.json 
+var keyVaultURL = builder.Configuration.GetSection("KeyVault:KeyVaultURL");
+var keyVaultClientId = builder.Configuration.GetSection("KeyVault:ClientId");
+var keyVaultClientSecret = builder.Configuration.GetSection("KeyVault:ClientSecret");
+var keyVaultDirectoryID = builder.Configuration.GetSection("KeyVault:DirectoryID");
 
+builder.Configuration.AddAzureKeyVault(keyVaultURL.Value!.ToString(),
+                                        keyVaultClientId.Value!.ToString(),
+                                        keyVaultClientSecret.Value!.ToString(),
+                                        new DefaultKeyVaultSecretManager());
+
+var credential = new ClientSecretCredential(keyVaultDirectoryID.Value!.ToString(), keyVaultClientId.Value!.ToString(), keyVaultClientSecret.Value!.ToString());
+
+var client = new SecretClient(new Uri(keyVaultURL.Value!.ToString()), credential);
+
+var connString = client.GetSecret("Myconnection").Value.Value.ToString();
 builder.Services.AddDbContext<PizzaContext>(
-    options => options.UseSqlServer(@"Data Source=NAJAH\MSSQLSERVER01;Initial Catalog=Pizza3;Integrated Security=SSPI;TrustServerCertificate=True;")
-);
+    options => options.UseSqlServer(connString));
+
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
        .AddEntityFrameworkStores<PizzaContext>()
