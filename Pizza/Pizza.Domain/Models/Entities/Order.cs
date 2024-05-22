@@ -12,6 +12,7 @@ namespace pizzariaV1.Data.Models.Entities
         public int OrderID { get; set; }
         public DateTime? OrderDate { get; set; }
         public string OrderStatus { get; set; }
+        [Range(0, 5000)]
         public decimal TotalPrice { get; set; }
 
         

@@ -12,6 +12,7 @@ namespace Pizza.Data.Models.Entities
         public int DishID { get; set; }
         [StringLength(50)]
         public string ?DishName { get; set;}
+        [Range(0, 500)]
         public decimal? Price { get; set; }
        
         public virtual Category? Category { get; set; }

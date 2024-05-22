@@ -15,6 +15,7 @@ namespace Pizza.Infrastructure.Repository.Interfaces
         Task<IdentityResult> UpdateUser(string userId, UserUpdate userUpdate);
         Task<bool> Login(UserLogin user);
         Task<ApplicationUser> GetUserByUserName(string userName);
+        Task<IdentityResult> RegisterRole(string roleName);
 
 
     }

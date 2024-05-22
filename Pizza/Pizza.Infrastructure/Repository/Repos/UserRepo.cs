@@ -24,44 +24,45 @@ namespace Pizza.Infrastructure.Repository.Repos
 
         public async Task<IdentityResult> RegisterUser(UserRegister userRegister)
         {
-
             var user = _mapper.Map<ApplicationUser>(userRegister);
             var result = await _userManager.CreateAsync(user, userRegister.Password);
 
             if (result.Succeeded)
             {
-                // Ensure the "Regular" role exists
-                if (!await _roleManager.RoleExistsAsync("Regular"))
-                {
-                    var roleResult = await _roleManager.CreateAsync(new IdentityRole("Regular"));
-                    if (!roleResult.Succeeded)
-                    {
-                        return roleResult;
-                    }
-                }
-
-                // Assign the "Regular" role to the user
                 result = await _userManager.AddToRoleAsync(user, "Regular");
             }
 
             return result;
         }
+
+        public async Task<IdentityResult> RegisterRole(string roleName)
+        {
+            // KOLLA OM ROLLEN EXISTERAR
+            if (await _roleManager.RoleExistsAsync(roleName))
+                return IdentityResult.Failed(new IdentityError { Description = $"Role '{roleName}' already exists." });
+            //SKAPA
+            var role = new IdentityRole(roleName);
+            var result = await _roleManager.CreateAsync(role);
+
+            return result;
+        }
+
         public async Task<List<UserGet>> GetAllUsersWithRoles()
         {
-            var users = await _userManager.Users.ToListAsync(); // Assuming you're using Entity Framework Core
+            var users = await _userManager.Users.ToListAsync(); 
             var usersWithRoles = new List<UserGet>();
 
             foreach (var user in users)
             {
-                var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault(); // Retrieve the first role (if any)
+                var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault(); 
                 var userGet = _mapper.Map<UserGet>(user, opts => opts.Items["Role"] = role);
                 usersWithRoles.Add(userGet);
             }
 
             return usersWithRoles;
-
-
         }
+
+
         public async Task<IdentityResult> DeleteUser(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -104,28 +105,18 @@ namespace Pizza.Infrastructure.Repository.Repos
             {
                 return IdentityResult.Failed(new IdentityError { Description = $"User with ID '{userId}' not found." });
             }
-
-            // Map properties from UserUpdate to ApplicationUser
             _mapper.Map(userUpdate, userToUpdate);
 
             return await _userManager.UpdateAsync(userToUpdate);
         }
+        
         public async Task<bool> Login(UserLogin user)
         {
-            // Find the user by username
+            // Find the user by username and check if the password is correct
             var identityUser = await _userManager.FindByNameAsync(user.UserName);
-            if (identityUser == null)
+            if (identityUser == null || !await _userManager.CheckPasswordAsync(identityUser, user.Password))
             {
-                // User not found
-                return false;
-            }
-
-            // Check if the password is correct
-            var isPasswordCorrect = await _userManager.CheckPasswordAsync(identityUser, user.Password);
-
-            if (!isPasswordCorrect)
-            {
-                // Invalid password
+                // User not found or invalid password
                 return false;
             }
 
@@ -140,6 +131,8 @@ namespace Pizza.Infrastructure.Repository.Repos
             var user = await _userManager.Users.SingleOrDefaultAsync(u => u.UserName == userName);
             return user;
         }
+    
+
 
 
     }

@@ -25,9 +25,25 @@ namespace Pizza.Application.Core.Services
 
         public async Task AddDish(DishDto dishDto)
         {
-            await _dishRepo.AddDishAsync(dishDto);
+            await _dishRepo.AddDish(dishDto);
+        }
+        public async Task AddCategory(Category category)
+        {
+            await _dishRepo.AddCategory(category);
+        }
+        public async Task AddIngredients(Ingredient ingredient)
+        {
+            await _dishRepo.AddIngredients(ingredient);
+        }
+        public async Task<List<Category>> GetAllCategories()
+        {
+            return await _dishRepo.GetAllCategories();
         }
 
+       public async Task<List<Ingredient>> GetAllIngredients()
+        {
+            return await _dishRepo.GetAllIngredients();
+        }
         public async Task UpdateDish(DishDto updatedDishDto)
         {
             await _dishRepo.UpdateDish(updatedDishDto);

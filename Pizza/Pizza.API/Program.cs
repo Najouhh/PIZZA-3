@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Pizza.API.Extensions;
 using Pizza.Application.Core.Interfaces;
 using Pizza.Application.Core.Services;
@@ -12,6 +13,7 @@ using Pizza.Infrastructure.Repository.Repos;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -30,7 +32,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
        .AddDefaultTokenProviders();
 
 builder.Services.AddSwaggerExtension();
-builder.Services.AddAuthenticationExtension();
+builder.Services.AddAuthenticationExtension(configuration);
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 builder.Services.AddScoped<IDishRepo, DishRepo>();

@@ -33,13 +33,16 @@ namespace Pizza.Application.Core.Services
         {
             return await _userRepo.RegisterUser(userRegister);
         }
-
+        public async Task<IdentityResult> RegisterRole(string roleName)
+        {
+            return await _userRepo.RegisterRole(roleName);
+        }
         public async Task<ApplicationUser> GetUserByUserName(string userName)
         {
             var user = await _userManager.Users.SingleOrDefaultAsync(u => u.UserName == userName);
             return user;
         }
-
+       
         public async Task<List<UserGet>> GetAllUsersWithRoles()
         {
             return await _userRepo.GetAllUsersWithRoles();
@@ -79,24 +82,18 @@ namespace Pizza.Application.Core.Services
 
         public async Task<string> GenerateTokenAsync(ApplicationUser user)
         {
-            // Retrieve user claims and roles from UserManager
-            var userClaims = await _userManager.GetClaimsAsync(user);
+            // Retrieve user roles from UserManager
             var roles = await _userManager.GetRolesAsync(user);
 
-            // Define the basic claims to be included in the JWT token
+            // Define the claims to be included in the JWT token
             var authClaims = new List<Claim>
-{
-    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-};
-
-            // Add user claims from UserManager
-            authClaims.AddRange(userClaims);
+              {
+                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                 new Claim(ClaimTypes.Name, user.UserName)
+              };
 
             // Add role claims
-            foreach (var role in roles)
-            {
-                authClaims.Add(new Claim(ClaimTypes.Role, role));
-            }
+            authClaims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             // Define the signing key using the secret key from configuration
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
