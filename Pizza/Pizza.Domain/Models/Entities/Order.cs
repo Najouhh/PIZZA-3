@@ -15,7 +15,7 @@ namespace pizzariaV1.Data.Models.Entities
         [Range(0, 5000)]
         public decimal TotalPrice { get; set; }
 
-        
+       
         public virtual ApplicationUser ApplicationUser { get; set; }
         [JsonIgnore]
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }

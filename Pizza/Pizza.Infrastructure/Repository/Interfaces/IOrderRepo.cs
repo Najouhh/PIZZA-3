@@ -5,9 +5,9 @@ namespace Pizza.Infrastructure.Repository.Interfaces
 {
     public interface IOrderRepo
     {
-        Task AddAsync(Order entity);
+        Task AddOrder(Order entity);
         Task<List<Order>> GetOrdersByUserID(string userId);
-        Task<Order> GetByIdAsync(int OrderID);
+        Task<Order> GetOrderByOrderID(int OrderID);
         Task UpdateAsync(Order order);
         Task<List<Order>> GetAllOrders();
     }

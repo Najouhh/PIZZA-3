@@ -204,7 +204,7 @@ namespace Pizza.Application.Core.Services
             }
 
             order.ApplicationUser = user;
-            await _orderRepo.AddAsync(order);
+            await _orderRepo.AddOrder(order);
 
             return true;
         }
@@ -219,7 +219,7 @@ namespace Pizza.Application.Core.Services
             await _orderRepo.GetOrdersByUserID(userId);
         public async Task<bool> ChangeOrderStatus(int orderId, string newStatus)
         {
-            var order = await _orderRepo.GetByIdAsync(orderId);
+            var order = await _orderRepo.GetOrderByOrderID(orderId);
             if (order == null)
                 return false;
 

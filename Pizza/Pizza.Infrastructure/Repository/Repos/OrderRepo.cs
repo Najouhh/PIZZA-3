@@ -16,7 +16,7 @@ namespace Pizza.Infrastructure.Repository.Repos
             _context = context;
         }
 
-        public async Task AddAsync(Order entity)
+        public async Task AddOrder(Order entity)
         {
             await _context.Orders.AddAsync(entity);
 
@@ -40,7 +40,7 @@ namespace Pizza.Infrastructure.Repository.Repos
                 .Where(o => o.ApplicationUser.Id == userId)
                 .ToListAsync();
         }
-        public async Task<Order> GetByIdAsync(int OrderID)
+        public async Task<Order> GetOrderByOrderID(int OrderID)
         {
             return await _context.Orders.FirstOrDefaultAsync(o => o.OrderID == OrderID);
         }
