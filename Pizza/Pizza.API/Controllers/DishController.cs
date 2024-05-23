@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Pizza.Application.Core.Interfaces;
 using Pizza.Data.Models.DTOS;
 using Pizza.Data.Models.Entities;
@@ -7,9 +8,10 @@ using System.ComponentModel;
 
 namespace Pizza.API.Controllers
 {
-
+   
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class DishController : Controller
     {
         private readonly IDishService _dishService;
@@ -22,7 +24,7 @@ namespace Pizza.API.Controllers
         }
 
         [HttpGet("Get All Dishes")]
-        //[Authorize(Roles = "Admin")]
+       
         public async Task<IActionResult> GetAllDishes()
         {
             try
@@ -37,44 +39,67 @@ namespace Pizza.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
         [HttpGet("Get All Categories")]
         public async Task<IActionResult> GetAllCategories()
         {
             var categories = await _dishService.GetAllCategories();
             return Ok(categories);
         }
+
         [HttpGet("Get All Ingredients")]
         public async Task<IActionResult> GetAllIngredients()
         {
             var Ingredients = await _dishService.GetAllIngredients();
             return Ok(Ingredients);
         }
-        [HttpPut("Update a Dish")]
-        //[Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateDish(DishDto dish)
-        {
-            await _dishService.UpdateDish(dish);
-            return Ok("Dish has been updated");
 
+    
+        [HttpPut("update dish")]
+        public async Task<IActionResult> UpdateDish( DishDto updatedDishDto)
+        {
+            try
+            {
+                await _dishService.UpdateDish(updatedDishDto);
+                return Ok("Dish updated successfully!");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while updating the dish.");
+                return BadRequest("Something went Wrong");
+            }
         }
         [HttpPost("add a new dish")]
         public async Task<IActionResult> AddDish(DishDto dishDto)
         {
-            await _dishService.AddDish(dishDto);
-            return Ok("Dish added successfully!");
+            try
+            {
+                await _dishService.AddDish(dishDto);
+                return Ok("Dish added successfully!");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unexpected error occurred while adding the dish.");
+                return BadRequest("An unexpected error occurred. Please try again later.");
+            }
         }
+
+
         [HttpPost("add a new Category")]
         public async Task<IActionResult> AddCategory(Category category)
         {
             await _dishService.AddCategory(category);
             return Ok("Category added successfully!");
         }
+
+
         [HttpPost("add a new Ingredient")]
         public async Task<IActionResult> AddIngredients(Ingredient ingredient)
         {
             await _dishService.AddIngredients(ingredient);
             return Ok("Category added successfully!");
         }
+
         [HttpDelete("Delete A dish")]
         public async Task<IActionResult> DeleteDish(int DishID)
         {

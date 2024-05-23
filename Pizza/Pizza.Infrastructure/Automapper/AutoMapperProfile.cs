@@ -35,6 +35,7 @@ namespace Pizza.Infrastructure.Automapper
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+              .ForMember(dest => dest.UserPoints, opt => opt.MapFrom(src => src.UserPoints))
             .ForMember(dest => dest.Role, opt => opt.MapFrom((src, dest, destMember, context) => context.Items["Role"]));
             CreateMap<ApplicationUser, UserUpdate>();
             CreateMap<UserUpdate, ApplicationUser>();

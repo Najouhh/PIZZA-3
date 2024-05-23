@@ -43,7 +43,7 @@ namespace Pizza.API.Controllers
             return Ok($"User {userRegister.Username} has been added");
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("Register a role")]
         public async Task<IActionResult> RegisterRole(string roleName)
         {
@@ -60,7 +60,7 @@ namespace Pizza.API.Controllers
                 return BadRequest(result.Errors);
             }
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpGet("Get All Users and their Roles")]
         public async Task<IActionResult> GetAllUsersWithRoles()
         {
@@ -68,8 +68,8 @@ namespace Pizza.API.Controllers
             return Ok(usersWithRoles);
         }
 
-
-        [HttpPost("Delete a User")]
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("Delete a User")]
         public async Task<IActionResult> DeleteUser(string userId)
         {
             var result = await _userService.DeleteUser(userId);
@@ -85,6 +85,7 @@ namespace Pizza.API.Controllers
                 return BadRequest(result.Errors);
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpPut("update User Role ")]
         public async Task<IActionResult> UpdateUserRole(string userId, [FromBody] string newRole)
         {
@@ -102,7 +103,7 @@ namespace Pizza.API.Controllers
         }
 
         [Authorize]
-        [HttpPost("Update User info")]
+        [HttpPut("Update User info")]
         public async Task<IActionResult> UpdateUser(string userId, [FromBody] UserUpdate userUpdate)
         {
             try

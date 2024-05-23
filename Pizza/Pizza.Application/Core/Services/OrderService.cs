@@ -213,7 +213,7 @@ namespace Pizza.Application.Core.Services
             orderedDishes.Zip(dishQuantities, (dish, quantity) => (dish.Price ?? 0) * quantity).Sum();
 
         private async Task<List<Dish>> GetDishesFromDto(OrderDto orderDto) =>
-            (await Task.WhenAll(orderDto.DishIds.Select(id => _dishRepo.GetByIdAsync(id)))).Where(dish => dish != null).ToList();
+            (await Task.WhenAll(orderDto.DishIds.Select(id => _dishRepo.GetDishByID(id)))).Where(dish => dish != null).ToList();
 
         public async Task<List<Order>> GetUserOrders(string userId) =>
             await _orderRepo.GetOrdersByUserID(userId);

@@ -38,7 +38,7 @@ builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsigh
 var app = builder.Build();
 
 app.AddSwaggerExtended();
-app.EnsureAdminExists();
+
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
