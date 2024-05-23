@@ -70,36 +70,6 @@ namespace Pizza.Infrastructure.Repository.Repos
             await _context.SaveChangesAsync();
         }
 
-        //public async Task UpdateDish(DishDto updatedDish)
-        //{
-        //    var original = await _context.Dishes
-        //        .Include(d => d.Category)
-        //        .Include(d => d.Ingredients)
-        //        .FirstOrDefaultAsync(x => x.DishID == updatedDish.DishID);
-
-        //    if (original != null)
-        //    {
-        //        // uppdatera namnet och pris
-        //        original.DishName = updatedDish.DishName;
-        //        original.Price = updatedDish.Price;
-
-        //        // Update category
-        //        _context.Entry(original).Property("CategoryID").CurrentValue = updatedDish.CategoryID;
-
-        //        // Update Ingredients
-        //        original.Ingredients.Clear();
-        //        foreach (var ingredientId in updatedDish.IngredientIDs)
-        //        {
-        //            var ingredient = await _context.Ingredients.FindAsync(ingredientId);
-        //            if (ingredient != null)
-        //            {
-        //                original.Ingredients.Add(ingredient);
-        //            }
-        //        }
-
-        //        await _context.SaveChangesAsync();
-        //    }
-        //}
         public async Task UpdateDish(Dish updatedDish)
         {
             _context.Entry(updatedDish).State = EntityState.Modified;

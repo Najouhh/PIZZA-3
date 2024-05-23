@@ -60,8 +60,8 @@ namespace Pizza.API.Controllers
                 return BadRequest(result.Errors);
             }
         }
-        [Authorize(Roles = "Admin")]
-        [HttpGet("Get All Users and their Roles")]
+     
+        [HttpGet("Get All Users and their Roles and points")]
         public async Task<IActionResult> GetAllUsersWithRoles()
         {
             var usersWithRoles = await _userService.GetAllUsersWithRoles();

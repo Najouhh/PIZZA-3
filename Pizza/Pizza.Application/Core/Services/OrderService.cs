@@ -159,79 +159,99 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
-namespace Pizza.Application.Core.Services
+public class OrderService : IOrderService
 {
-    public class OrderService : IOrderService
+    private readonly IDishRepo _dishRepo;
+    private readonly IOrderRepo _orderRepo;
+    private readonly IMapper _mapper;
+    private readonly UserManager<ApplicationUser> _userManager;
+
+    public OrderService(IDishRepo dishRepo, IOrderRepo orderRepo, IMapper mapper, UserManager<ApplicationUser> userManager)
     {
-        private readonly IDishRepo _dishRepo;
-        private readonly IOrderRepo _orderRepo;
-        private readonly IMapper _mapper;
-        private readonly UserManager<ApplicationUser> _userManager;
-
-        public OrderService(IDishRepo dishRepo, IOrderRepo orderRepo, IMapper mapper, UserManager<ApplicationUser> userManager)
-        {
-            _dishRepo = dishRepo;
-            _orderRepo = orderRepo;
-            _mapper = mapper;
-            _userManager = userManager;
-        }
-
-        public async Task<bool> PlaceOrderAsync(OrderDto orderDto, string userId)
-        {
-            var orderedDishes = await GetDishesFromDto(orderDto);
-            if (!orderedDishes.Any()) return false;
-
-            var totalPrice = CalculateTotalPrice(orderedDishes, orderDto.DishQuantities) * (orderDto.DishQuantities.Sum() >= 3 ? 0.8m : 1);
-
-            var order = _mapper.Map<Order>(orderDto);
-            order.OrderDate = DateTime.Now;
-            order.OrderStatus = "Pending";
-            order.OrderDetails = orderedDishes.Select((dish, i) => new OrderDetail { Dish = dish, Quantity = orderDto.DishQuantities[i] }).ToList();
-            order.TotalPrice = totalPrice;
-
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null) return false;
-
-            var isPremiumUser = (await _userManager.GetRolesAsync(user)).Contains("Premium");
-            var totalPointsEarned = orderDto.DishQuantities.Sum() * 10;
-            if (isPremiumUser) user.UserPoints += totalPointsEarned;
-
-            if (user.UserPoints >= 100 && order.OrderDetails.Any())
-            {
-                order.OrderDetails.First().Quantity++;
-                user.UserPoints -= 100;
-            }
-
-            order.ApplicationUser = user;
-            await _orderRepo.AddOrder(order);
-
-            return true;
-        }
-
-        private decimal CalculateTotalPrice(IEnumerable<Dish> orderedDishes, IEnumerable<int> dishQuantities) =>
-            orderedDishes.Zip(dishQuantities, (dish, quantity) => (dish.Price ?? 0) * quantity).Sum();
-
-        private async Task<List<Dish>> GetDishesFromDto(OrderDto orderDto) =>
-            (await Task.WhenAll(orderDto.DishIds.Select(id => _dishRepo.GetDishByID(id)))).Where(dish => dish != null).ToList();
-
-        public async Task<List<Order>> GetUserOrders(string userId) =>
-            await _orderRepo.GetOrdersByUserID(userId);
-        public async Task<bool> ChangeOrderStatus(int orderId, string newStatus)
-        {
-            var order = await _orderRepo.GetOrderByOrderID(orderId);
-            if (order == null)
-                return false;
-
-            order.OrderStatus = newStatus;
-            await _orderRepo.UpdateAsync(order);
-
-            return true;
-        }
-        public async Task<List<Order>> GetAllOrders()
-        {
-            return await _orderRepo.GetAllOrders();
-        }
+        _dishRepo = dishRepo;
+        _orderRepo = orderRepo;
+        _mapper = mapper;
+        _userManager = userManager;
     }
+
+    public async Task<bool> PlaceOrderAsync(OrderDto orderDto, string userId)
+    {
+        var orderedDishes = await GetDishesFromDto(orderDto);
+        if (!orderedDishes.Any()) return false;
+
+        var totalPrice = CalculateTotalPrice(orderedDishes, orderDto.DishQuantities) * (orderDto.DishQuantities.Sum() >= 3 ? 0.8m : 1);
+
+        var order = _mapper.Map<Order>(orderDto);
+        order.OrderDate = DateTime.Now;
+        order.OrderStatus = "Pending";
+        order.OrderDetails = orderedDishes.Select((dish, i) => new OrderDetail { Dish = dish, Quantity = orderDto.DishQuantities[i] }).ToList();
+        order.TotalPrice = totalPrice;
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null) return false;
+
+        var isPremiumUser = (await _userManager.GetRolesAsync(user)).Contains("Premium");
+        var totalPointsEarned = orderDto.DishQuantities.Sum() * 10;
+        if (isPremiumUser) user.UserPoints += totalPointsEarned;
+
+        if (user.UserPoints >= 100 && order.OrderDetails.Any())
+        {
+            order.OrderDetails.First().Quantity++;
+            user.UserPoints -= 100;
+        }
+
+        order.ApplicationUser = user;
+
+        // Ensure that AddOrder is awaited to avoid concurrent DbContext operations
+        await _orderRepo.AddOrder(order);
+
+        return true;
+    }
+
+    public async Task<List<Order>> GetUserOrders(string userId) =>
+        await _orderRepo.GetOrdersByUserID(userId);
+
+    public async Task<bool> ChangeOrderStatus(int orderId, string newStatus)
+    {
+        var order = await _orderRepo.GetOrderByOrderID(orderId);
+        if (order == null)
+            return false;
+
+        order.OrderStatus = newStatus;
+        await _orderRepo.UpdateOrder(order);
+
+        return true;
+    }
+
+    public async Task<List<Order>> GetAllOrders()
+    {
+        return await _orderRepo.GetAllOrders();
+    }
+
+    private decimal CalculateTotalPrice(IEnumerable<Dish> orderedDishes, IEnumerable<int> dishQuantities) =>
+        orderedDishes.Zip(dishQuantities, (dish, quantity) => (dish.Price ?? 0) * quantity).Sum();
+
+    private async Task<List<Dish>> GetDishesFromDto(OrderDto orderDto)
+    {
+        var orderedDishes = new List<Dish>();
+
+        // Sequentially fetch dishes to avoid concurrent DbContext operations
+        foreach (var dishId in orderDto.DishIds)
+        {
+            var dish = await _dishRepo.GetDishByID(dishId);
+            if (dish != null)
+            {
+                orderedDishes.Add(dish);
+            }
+        }
+
+        return orderedDishes;
+    }
+    public async Task DeleteOrder(int OrderID)
+    {
+        await _orderRepo.DeleteOrder(OrderID);
+    }
+
 }
+
 

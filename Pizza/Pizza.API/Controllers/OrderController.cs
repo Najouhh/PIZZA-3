@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Pizza.Application.Core.Interfaces;
 using Pizza.Application.Core.Services;
 using Pizza.Data.Models.DTOS.Order;
+using Pizza.Data.Models.Entities;
 using System.Security.Claims;
 
 namespace Pizza.API.Controllers
@@ -43,6 +44,7 @@ namespace Pizza.API.Controllers
                 return BadRequest("Failed to place order.");
             }
         }
+        [Authorize]
         [HttpGet("Get Order by UserID")]
         public async Task<IActionResult> GetUserOrders()
         {
@@ -60,6 +62,7 @@ namespace Pizza.API.Controllers
 
             return Ok(orders);
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost("change Order Status")]
         public async Task<IActionResult> ChangeOrderStatus(int orderId, string newStatus)
         {
@@ -69,6 +72,7 @@ namespace Pizza.API.Controllers
             else
                 return NotFound("Order not found.");
         }
+        [Authorize(Roles = "Admin")]
         [HttpGet("Get All Orders")]
         public async Task<IActionResult> GetAllOrders()
         {
@@ -76,6 +80,14 @@ namespace Pizza.API.Controllers
          
             return Ok(Orders);
         }
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("Delete Order")]
+        public async Task<IActionResult> DeleteOrder(int OrderID)
+        {
+            await _orderService.DeleteOrder(OrderID);
+            return Ok($"Order with {OrderID} has been deleted");
+        }
     }
+  
 }
 

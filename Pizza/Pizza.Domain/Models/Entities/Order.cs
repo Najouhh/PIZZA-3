@@ -17,7 +17,7 @@ namespace pizzariaV1.Data.Models.Entities
 
        
         public virtual ApplicationUser ApplicationUser { get; set; }
-        [JsonIgnore]
+      
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
 
 

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Pizza.Data.Models.Entities;
 using Pizza.Infrastructure.Data;
 using Pizza.Infrastructure.Migrations;
 using Pizza.Infrastructure.Repository.Interfaces;
@@ -30,6 +31,7 @@ namespace Pizza.Infrastructure.Repository.Repos
         {
             return await _context.Orders
            .Include(d => d.OrderDetails)
+           .ThenInclude(od => od.Dish)
            .ToListAsync();
         }
         public async Task<List<Order>> GetOrdersByUserID(string userId)
@@ -45,9 +47,16 @@ namespace Pizza.Infrastructure.Repository.Repos
             return await _context.Orders.FirstOrDefaultAsync(o => o.OrderID == OrderID);
         }
 
-        public async Task UpdateAsync(Order order)
+        public async Task UpdateOrder(Order order)
         {
             _context.Orders.Update(order);
+            await _context.SaveChangesAsync();
+        }
+        public async Task DeleteOrder (int OrderID)
+        {
+
+            var Order = _context.Orders.FirstOrDefault(x => x.OrderID ==OrderID);
+            _context.Orders.Remove(Order);
             await _context.SaveChangesAsync();
         }
     }

@@ -8,7 +8,8 @@ namespace Pizza.Infrastructure.Repository.Interfaces
         Task AddOrder(Order entity);
         Task<List<Order>> GetOrdersByUserID(string userId);
         Task<Order> GetOrderByOrderID(int OrderID);
-        Task UpdateAsync(Order order);
+        Task UpdateOrder(Order order);
         Task<List<Order>> GetAllOrders();
+        Task DeleteOrder(int OrderID);
     }
 }
