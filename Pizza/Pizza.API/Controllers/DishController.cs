@@ -11,7 +11,7 @@ namespace Pizza.API.Controllers
    
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+  
     public class DishController : Controller
     {
         private readonly IDishService _dishService;
@@ -23,6 +23,7 @@ namespace Pizza.API.Controllers
             _logger = logger;
         }
 
+        [Authorize]
         [HttpGet("Get All Dishes")]
        
         public async Task<IActionResult> GetAllDishes()
@@ -39,14 +40,14 @@ namespace Pizza.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpGet("Get All Categories")]
         public async Task<IActionResult> GetAllCategories()
         {
             var categories = await _dishService.GetAllCategories();
             return Ok(categories);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpGet("Get All Ingredients")]
         public async Task<IActionResult> GetAllIngredients()
         {
@@ -54,7 +55,7 @@ namespace Pizza.API.Controllers
             return Ok(Ingredients);
         }
 
-    
+        [Authorize(Roles = "Admin")]
         [HttpPut("update dish")]
         public async Task<IActionResult> UpdateDish( DishDto updatedDishDto)
         {
@@ -69,6 +70,7 @@ namespace Pizza.API.Controllers
                 return BadRequest("Something went Wrong");
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost("add a new dish")]
         public async Task<IActionResult> AddDish(DishDto dishDto)
         {
@@ -84,14 +86,14 @@ namespace Pizza.API.Controllers
             }
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("add a new Category")]
         public async Task<IActionResult> AddCategory(Category category)
         {
             await _dishService.AddCategory(category);
             return Ok("Category added successfully!");
         }
-
+        [Authorize(Roles = "Admin")]
 
         [HttpPost("add a new Ingredient")]
         public async Task<IActionResult> AddIngredients(Ingredient ingredient)
@@ -99,7 +101,7 @@ namespace Pizza.API.Controllers
             await _dishService.AddIngredients(ingredient);
             return Ok("Category added successfully!");
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpDelete("Delete A dish")]
         public async Task<IActionResult> DeleteDish(int DishID)
         {

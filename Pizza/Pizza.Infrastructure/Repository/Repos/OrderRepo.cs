@@ -31,7 +31,7 @@ namespace Pizza.Infrastructure.Repository.Repos
         {
             return await _context.Orders
            .Include(d => d.OrderDetails)
-           .ThenInclude(od => od.Dish)
+           //.ThenInclude(od => od.Dish)
            .ToListAsync();
         }
         public async Task<List<Order>> GetOrdersByUserID(string userId)
