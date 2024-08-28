@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pizza.API", "Pizza.API\Pizza.API.csproj", "{6E72B68F-1802-40F3-97B3-D527643BF47E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pizza.API", "Pizza.API\Pizza.API.csproj", "{6E72B68F-1802-40F3-97B3-D527643BF47E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pizza.Domain", "Pizza.Domain\Pizza.Domain.csproj", "{E3267926-E1C3-4A3A-8773-A4E2B7DD4D41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pizza.Domain", "Pizza.Domain\Pizza.Domain.csproj", "{E3267926-E1C3-4A3A-8773-A4E2B7DD4D41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pizza.Application", "Pizza.Application\Pizza.Application.csproj", "{3F7A5D42-01DA-4112-9362-F925A3C7ABB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pizza.Application", "Pizza.Application\Pizza.Application.csproj", "{3F7A5D42-01DA-4112-9362-F925A3C7ABB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pizza.Infrastructure", "Pizza.Infrastructure\Pizza.Infrastructure.csproj", "{7D63538D-C78B-4C9C-BF8F-5211A04086A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pizza.Infrastructure", "Pizza.Infrastructure\Pizza.Infrastructure.csproj", "{7D63538D-C78B-4C9C-BF8F-5211A04086A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaTest", "PizzaTest\PizzaTest.csproj", "{DDCCCDD2-7884-45A3-9621-C8B42A0CF945}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{7D63538D-C78B-4C9C-BF8F-5211A04086A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D63538D-C78B-4C9C-BF8F-5211A04086A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D63538D-C78B-4C9C-BF8F-5211A04086A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDCCCDD2-7884-45A3-9621-C8B42A0CF945}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDCCCDD2-7884-45A3-9621-C8B42A0CF945}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDCCCDD2-7884-45A3-9621-C8B42A0CF945}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDCCCDD2-7884-45A3-9621-C8B42A0CF945}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
